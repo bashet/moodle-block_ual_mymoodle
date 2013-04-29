@@ -25,8 +25,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$plugin->version = 2012103101;
+$plugin->version = 2013042401;
 $plugin->maturity = MATURITY_ALPHA;
 $plugin->requires = 2011070100; // 2.1.
 $plugin->component = 'block_ual_mymoodle';
-$plugin->release = '0.1 (Build: 2012103101)';
+$plugin->release = '0.3 (Build: 2013042401)';

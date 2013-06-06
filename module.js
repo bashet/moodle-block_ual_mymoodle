@@ -121,14 +121,123 @@ M.block_ual_mymoodle.init_tree = function(Y, expand_all, htmlid, current_url) {
                 }
             }
         }
+        function click_to_expand_all(tree,expandAll){
+            //need to expand the tree
+            var ThisElement = expandAll;
+            var MyTree = tree;
+            if(ThisElement.className == 'showunits'){
+                for(var i=1;i<MyTree._nodes.length;i++){
+                    var MyFirstEl = MyTree._nodes[i].getEl().firstChild.getElementsByTagName('show_hide');
+                    if(MyFirstEl.length > 0){
+                        MyTree._nodes[i].expand();
+                        for(MyChildren = 0; MyChildren < MyTree._nodes[i].children.length; MyChildren++ ){
+                            MyTree._nodes[i].children[MyChildren].expand();
+                        }
+                        if(MyFirstEl.length>0){
+                            MyFirstEl[0].classList.add('hideunits');
+                            MyFirstEl[0].classList.remove('showunits');
+                            MyFirstEl[0].innerHTML = "Hide units";
+                        }
+                    }
+                }
+                ThisElement.classList.add('hideunits');
+                ThisElement.classList.remove('showunits');
+                ThisElement.innerHTML = "Collapse All";
+
+            }else{
+                for(var i=1;i<MyTree._nodes.length;i++){
+                    var MyFirstEl = MyTree._nodes[i].getEl().firstChild.getElementsByTagName('show_hide');
+                    if(MyFirstEl.length > 0){
+                        MyTree._nodes[i].collapse();
+                        if(MyFirstEl.length>0){
+                            MyFirstEl[0].classList.add('showunits');
+                            MyFirstEl[0].classList.remove('hideunits');
+                            MyFirstEl[0].innerHTML = "Show units";
+                        }
+                    }
+                }
+                ThisElement.classList.add('showunits');
+                ThisElement.classList.remove('hideunits');
+                ThisElement.innerHTML = "Expand All";
+            }
+        }
+        function ShowUnits(j){
+            var ShowUnits = document.createElement("show_hide");
+            ShowUnits.name = "showunits";
+            ShowUnits.className = "showunits";
+            ShowUnits.id        = "showunits"+j;
+            if(j=='Expand all'){
+                ShowUnits.title = j;
+                ShowUnits.innerHTML = j;
+            }else{
+                ShowUnits.title = "showunits"+j;
+                ShowUnits.innerHTML = "Show units";
+            }
+
+            return ShowUnits;
+        }
+        function renderShowHideLinks(tree,parentEl){
+            var MyTree = tree;
+            var courseFound = false;
+            for(var i=1;i<MyTree._nodes.length;i++){
+                MyTree._nodes[i].expand();
+                if(MyTree._nodes[i].className=='course_all_years'){
+                    for(var j = 0; j < MyTree._nodes[i].children.length; j++){
+                        if(MyTree._nodes[i].children[j].className=='course'){
+                            courseFound = true;
+                        }
+                    }
+                    if(courseFound == false){
+                        MyTree._nodes[i].collapse();
+                    }
+                }
+                if(MyTree._nodes[i].className=='course'){
+                    MyTree._nodes[i].collapse();
+                }
+            }
+
+            var MyHeader = parentEl.offsetParent.getElementsByClassName('header')
+            MyHeader[0].appendChild(new ShowUnits('Expand all'));
+
+            var MyMoodleTables = parentEl.getElementsByTagName('table');
+            var TotalElement = MyMoodleTables.length;
+
+            for (var i =0; i < TotalElement; i++) {
+                var ThisTable = MyMoodleTables[i];
+
+                for (j=0; j<ThisTable.classList.length; j++){
+                    if(ThisTable.classList[j]=='ygtv-collapsed'){
+                       ThisTable.children[0].children[0].lastChild.appendChild(new ShowUnits(new Date().getTime()));
+                    }
+                }
+            }
+
+            /*Note that the show/hide link needs to expand and collapse the tree branch appropriately.*/
+        }
 
         function onClickEvent(oArgs) {
             var node = oArgs.node;
-
-            if(node.expanded) {
-                node.collapse();
-            } else {
-                node.expand();
+            //if(node.depth==2){
+            var MyFirstEl = node.getEl().firstChild.getElementsByTagName('show_hide');
+            if(MyFirstEl.length > 0){
+                if(node.expanded) {
+                    node.collapse();
+                    if(MyFirstEl.length>0){
+                        MyFirstEl[0].classList.add('showunits');
+                        MyFirstEl[0].classList.remove('hideunits');
+                        MyFirstEl[0].innerHTML = "Show units";
+                    }
+                } else {
+                    node.expand();
+                    for(MyChildren = 0; MyChildren < node.children.length; MyChildren++ ){
+                        node.children[MyChildren].expand();
+                    }
+                    if(MyFirstEl.length>0){
+                        MyFirstEl[0].classList.add('hideunits');
+                        MyFirstEl[0].classList.remove('showunits');
+                        MyFirstEl[0].innerHTML = "Hide units";
+                    }
+                }
             }
         }
 
@@ -147,6 +256,7 @@ M.block_ual_mymoodle.init_tree = function(Y, expand_all, htmlid, current_url) {
             postprocess(el);
         });
 
+
         tree.subscribe("clickEvent", onClickEvent);
 
         var root = tree.getRoot();
@@ -161,11 +271,15 @@ M.block_ual_mymoodle.init_tree = function(Y, expand_all, htmlid, current_url) {
         // Post process the rendered tree - note not all of the nodes will be rendered at this point (they are
         // loaded but removed from the DOM). Again, postprocess is a recursive function...
         postprocess(parentEl);
-        
+
         // Move focus to the current node...
         if(current_node) {
             current_node.focus();
         }
+        renderShowHideLinks(tree,parentEl);
+        var expandAll = document.getElementById("showunitsExpand all");
+        expandAll.onclick = function () { click_to_expand_all(tree,expandAll); };
+
     });
 };
 

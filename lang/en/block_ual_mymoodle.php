@@ -47,6 +47,7 @@ $string['unknown_year']         = 'not known';
 $string['ual_mymoodle:can_edit']= 'Can edit';
 $string['ual_mymoodle:show_hidden_courses_students'] = 'Students see hidden courses';
 $string['ual_mymoodle:show_hidden_courses_staff'] = 'Staff see hidden courses';
+$string['showunits'] = 'Show units';
 
 
 

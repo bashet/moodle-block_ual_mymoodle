@@ -249,8 +249,6 @@ class block_ual_mymoodle_renderer extends plugin_renderer_base {
                             foreach($events as $courseid=>$mod_events) {
                                 if(!empty($mod_events)) {
                                     foreach($mod_events as $mod_type=>$event_html) {
-                                        //$event_list .= html_writer::tag('li', $event_html);
-
                                         $all_events = explode('<div class="assign overview">',$event_html);
                                         foreach($all_events as $my_event){
                                             if(!empty($my_event)){
